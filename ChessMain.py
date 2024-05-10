@@ -30,7 +30,7 @@ def main(mode = 0, firstTurn = True):
     firstTurnForPlayer = firstTurn # Human will have the first turn
 
     combo = 5.0
-    playerScore = agentScore = 0
+    playerScore = agentScore = abs(MoveDecision.scoreBoard(gs))
     upPlayerScore = upAgentScore = 0
     def estimate(nextScore, isAgent: bool):
         nonlocal combo, agentScore, playerScore, upPlayerScore, upAgentScore
