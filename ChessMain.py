@@ -13,6 +13,8 @@ def loadLargeImage():
     pieces = ['wr','bn','wb','bq']
     for piece in pieces:
         LARGE_IMAGES[piece] = p.transform.scale(p.image.load('images/'+piece+'.png'),(2*SQ_SIZE,2*SQ_SIZE))
+
+
                                                 
 def main(mode = 0, firstTurn = True):
     p.init()
@@ -117,6 +119,7 @@ def main(mode = 0, firstTurn = True):
                                 playerClicks = []
                             else:
                                 playerClicks = [sqSelected]
+                            estimate(abs(MoveDecision.scoreBoard(gs)), False)
                             
             else:
                 Minimax_move = MoveDecision.findBestMove(gs, validMoves)
@@ -127,6 +130,7 @@ def main(mode = 0, firstTurn = True):
                 gs.makeMove(Minimax_move)
                 print(Minimax_move.getChessNotation())
                 moveMade = True
+                estimate(abs(MoveDecision.scoreBoard(gs)), True)
         
         elif mode == 0 and not gameOver:
             minimaxTurn = firstTurnForPlayer = gs.whiteToMove

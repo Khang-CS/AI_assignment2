@@ -1,5 +1,6 @@
 from copy import deepcopy
 import random
+import sys
 
 from constraint import*
 
@@ -13,14 +14,14 @@ def selectRandomPromote(defaultPromote = None):
         return random.choice(['q','n','r','b'])
     return defaultPromote
 
-def evaluateScore(gs):
-    if gs.checkMate:
-        if gs.whiteToMove:
+def evaluateScore(gameState):
+    if gameState.checkMate:
+        if gameState.whiteToMove:
             return -CHECKMATE
         else: 
             return CHECKMATE
     
-    elif gs.staleMate:
+    elif gameState.staleMate:
         return STALEMATE
     
     score = 0 # score of state
@@ -28,28 +29,29 @@ def evaluateScore(gs):
     for row in range(DIMENSION):
         for col in range(DIMENSION):
             positionScore = 0
-            chessCell = gs.board[row][col]
+            chessCell = gameState.board[row][col]
 
             if chessCell == '--':
                 continue
 
-            if not gs.whiteToMove and chessCell[0] == 'w':
+            if not gameState.whiteToMove and chessCell[0] == 'w':
                 if chessCell[1] == 'p':
                     positionScore = PIECE_POSITIONS_SCORE['wp'][row][col] * WEIGHT_SCORE['p']
 
                 elif chessCell[1] != 'k':
                     positionScore = PIECE_POSITIONS_SCORE[chessCell[1]][row][col] * WEIGHT_SCORE[chessCell[1]]
 
-                score += PIECESCORE[chessCell[1]]*(100 + positionScore)/100
+                score += PIECESCORE[chessCell[1]]*(1 + positionScore)
 
-            elif gs.whiteToMove and chessCell[0] == 'b':
+            elif gameState.whiteToMove and chessCell[0] == 'b':
                 if chessCell[1] == 'p':
                     positionScore = PIECE_POSITIONS_SCORE['bp'][row][col] * WEIGHT_SCORE['p']
 
                 elif chessCell[1] != 'k':
                     positionScore = PIECE_POSITIONS_SCORE[chessCell[1]][row][col] * WEIGHT_SCORE[chessCell[1]]
 
-                score -= PIECESCORE[chessCell[1]]*(100 + positionScore)/100
+                score -= PIECESCORE[chessCell[1]]*(1 + positionScore)
+    
     return score
 
 
@@ -63,36 +65,35 @@ def findBestMove(gs, validMoves):
 
 def findMoveMinimax(gameState, validMoves, depth, alpha, beta, turn):
     global nextMove
+    
     if depth == 0:
         return turn * evaluateScore(gameState)
     
-    maximumScore = -CHECKMATE
-    for move in validMoves:
-        if move.isPromote:
-            move.promoteTo = selectRandomPromote('q')
+    maximumScore = -CHECKMATE    
+    
         
+    for move in validMoves:
+
+        if move.isPromote:
+            move.promoteTo=makeRandomMove('q')
+
         localGameState = deepcopy(gameState)
-        localGameState.makeMove(move)
+        localGameState.makeMove(validMoves[0])
 
         nextMoves = localGameState.getValidMoves()
-
-        score = - findMoveMinimax(localGameState, nextMoves, depth -1, -beta, -alpha, -turn)
+        score = -findMoveMinimax(localGameState, nextMoves, depth -1, -beta, -alpha, -turn)
 
         if score > maximumScore:
-            maximumScore = score
+            score = maximumScore
             if depth == DEPTH:
-                nextMove = move
+                nextMove = move   
 
-        
         if maximumScore > alpha:
             alpha = maximumScore
-        
         if alpha >= beta:
-            break
+            break   
 
-    return maximumScore
-
-
+    return score
             
 
             
