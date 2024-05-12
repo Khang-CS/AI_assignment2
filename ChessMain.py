@@ -30,7 +30,7 @@ def main(mode = 0, firstTurn = True):
     firstTurnForPlayer = firstTurn # Human will have the first turn
 
     combo = 5.0
-    playerScore = agentScore = abs(MoveDecision.scoreBoard(gs))
+    playerScore = agentScore = abs(MoveDecision.evaluateScore(gs))
     upPlayerScore = upAgentScore = 0
     def estimate(nextScore, isAgent: bool):
         nonlocal combo, agentScore, playerScore, upPlayerScore, upAgentScore
@@ -119,7 +119,7 @@ def main(mode = 0, firstTurn = True):
                                 playerClicks = []
                             else:
                                 playerClicks = [sqSelected]
-                            estimate(abs(MoveDecision.scoreBoard(gs)), False)
+                            estimate(abs(MoveDecision.evaluateScore(gs)), False)
                             
             else:
                 Minimax_move = MoveDecision.findBestMove(gs, validMoves)
@@ -130,7 +130,7 @@ def main(mode = 0, firstTurn = True):
                 gs.makeMove(Minimax_move)
                 print(Minimax_move.getChessNotation())
                 moveMade = True
-                estimate(abs(MoveDecision.scoreBoard(gs)), True)
+                estimate(abs(MoveDecision.evaluateScore(gs)), True)
         
         elif mode == 0 and not gameOver:
             minimaxTurn = firstTurnForPlayer = gs.whiteToMove
